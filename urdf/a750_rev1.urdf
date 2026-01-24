@@ -129,9 +129,9 @@
   </link>
   <link name="link6">
     <inertial>
-      <origin xyz="0.04181322160503506 4.431387377599947e-06 3.801590688741791e-05" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0.041864216696457776 4.431387377599947e-06 1.2768446093824346e-05" rpy="0.0 -0.0 0.0"/>
       <mass value="0.34348005499634865"/>
-      <inertia ixx="0.0001791029737172769" ixy="2.6248228869131368e-09" ixz="-5.31908617968957e-07" iyy="0.000157462917889967" iyz="-9.869996762111829e-08" izz="0.00020039654056259142"/>
+      <inertia ixx="0.00017909077337099788" ixy="2.601546504549042e-09" ixz="-2.945476264333272e-07" iyy="0.00015845933904678388" iyz="-9.868844357959275e-08" izz="0.00020140516206568725"/>
     </inertial>
     <visual>
       <geometry>
@@ -142,18 +142,46 @@
       </material>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </visual>
-  </link>
-  <link name="link7">
-    <inertial>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
-      <mass value="0.0"/>
-      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
-    </inertial>
     <collision>
       <geometry>
-        <mesh filename="package://a750_description/meshes/a750_rev1/collision_link7.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://a750_description/meshes/a750_rev1/collision_link6.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="gripper_base"/>
+  <link name="left_finger_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://a750_description/meshes/a750_rev1/finger.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="Plum">
+        <color rgba="0.86666667 0.62745098 0.86666667 1.        "/>
+      </material>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://a750_description/meshes/a750_rev1/collision_finger.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="right_finger_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://a750_description/meshes/a750_rev1/finger.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="Plum">
+        <color rgba="0.86666667 0.62745098 0.86666667 1.        "/>
+      </material>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 3.141592653589793"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://a750_description/meshes/a750_rev1/collision_finger.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 3.141592653589793"/>
     </collision>
   </link>
   <joint name="joint1" type="revolute">
@@ -198,12 +226,26 @@
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.029 0.0 0.064" rpy="-1.5707963267948966 -1.5707963267948966 0.0"/>
   </joint>
-  <joint name="gripper" type="revolute">
-    <limit effort="100.0" velocity="3.9269908169872414" lower="-3.141592653589793" upper="3.141592653589793"/>
+  <joint name="wrist_to_gripper" type="fixed">
     <parent link="link6"/>
-    <child link="link7"/>
+    <child link="gripper_base"/>
     <axis xyz="1. 0. 0."/>
-    <origin xyz="0.066 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    <origin xyz="0.076 0.0 0.0" rpy="-1.5707963267948966 -0.0 -1.5707963267948966"/>
+  </joint>
+  <joint name="finger" type="prismatic">
+    <limit effort="100.0" velocity="255.0" lower="0.02" upper="0.06"/>
+    <parent link="gripper_base"/>
+    <child link="left_finger_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="finger_mimic" type="prismatic">
+    <limit effort="100.0" velocity="255.0" lower="0.02" upper="0.06"/>
+    <mimic joint="finger" multiplier="-1.0" offset="0.0"/>
+    <parent link="gripper_base"/>
+    <child link="right_finger_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
   </joint>
   <ros2_control name="A750System" type="system">
     <hardware>
